@@ -1,0 +1,61 @@
+
+model_class: VaeEmbeddingAttacker  
+model_config:
+  feature: gender
+  dims: [128] # [embedding_size]+ dims + [n_classes]
+  embedding_size: 64
+  n_parallel: 1
+  input_dropout: 0.1 
+  loss: ce
+  
+
+    
+dataset_config: 
+  dataset: lfm-demobias
+  dataset_type: multi_hot # TODO, pairwise, one-hot
+  user_features:
+    - name: "gender"
+      type: "categorical" 
+
+
+trainer:
+  n_epochs: 100
+  eval_metrics:  ["bacc","acc"]
+  store_last_model: true
+
+  dataloader:
+    batch_size: 256
+    eval_batch_size : 256 
+    n_workers: 0
+    shuffle_train: true
+
+  optimizer: 'adamw' 
+  optimizer_config: 
+    lr: 1e-3
+    weight_decay: 1e-4
+    
+  scheduler:
+    mode: 'min'
+    factor: 0.1
+    patience: 5
+    min_lr: 1e-6
+  
+  early_stopping_criteria:
+    utility:
+      metric: "bacc" 
+      highest_is_best: true
+      warmup: false
+      patience: 10
+
+  store_model_every: 1000
+
+
+
+logging:
+  log_every_n_batches: 100
+random_state: 42
+# Generate seeds [int.from_bytes(os.urandom(4),'big') for _ in range(5)]
+# random_state_seeds: [4166105386, 1385303667, 563507428] #, 3958069351, 3217886187]
+use_wandb: true
+  
+

@@ -1,0 +1,83 @@
+
+model_class : AdvXMultVAE
+model_config:
+  encoder_dims: [ 256 ] # VAE [n_items] + encoder_dims + [2*latent_size] 
+  decoder_dims: [ 256 ] # VAE [latent_size]+ decoder_dims + [n_item] 
+  latent_size : 128
+  input_dropout: 0.1
+  decoder_dropout: 0.0
+  anneal_cap: 0.5 # beta parameter 
+  total_anneal_steps: 0 # set this value to 0 for constant beta parameter
+  l1_weight_decay: ~ 
+
+  adversary_config:
+    # the list of features should be the same declared in dataset_config.user_features
+    - feature: "gender" 
+      dims: [64] # Adversary [latent] + adv_module_dims + [feature_num_categories]
+      grad_scaling: 500 #400
+      input_dropout: 0.3
+      n_parallel: 5
+      loss: ce
+      
+
+    # - feature: "age"
+    #   adv_module_dims: [100] # Adversary [latent] + adv_module_dims + [1] for the continuous case
+    #   grad_scaling: 1
+    #   loss: mse
+
+  
+
+dataset_config: 
+  dataset: lfm-demobias
+  dataset_type: multi_hot ## TODO
+  user_features:
+    - name: "gender"
+      type: "categorical"
+    
+    # - name: "age"
+    #   type: "continuous"  
+
+
+trainer:
+  n_epochs: 200
+  metrics_top_k: [ 10 , 20, 50, 100 ]
+  eval_metrics :  [ "ndcg", "recall", "coverage"]
+  store_last_model: true
+
+  dataloader:
+    batch_size: 512
+    eval_batch_size : 512
+    n_workers: 0
+    shuffle_train: true
+
+  optimizer: 'adamw' 
+  optimizer_config: 
+    lr: 1e-2
+    weight_decay: 1e-4
+
+  adv_optimizer_config: 
+    lr: 1e-2
+    weight_decay: 1e-4
+  scheduler:
+    mode: 'min'
+    factor: 0.1
+    patience: 5
+    min_lr: 1e-6
+  
+  early_stopping_criteria:
+    utility:
+      metric: "ndcg@10"
+      highest_is_best: true
+      warmup: false
+      patience: 10
+
+  store_model_every: 1000
+
+
+
+logging:
+  log_every_n_batches: 100
+random_state: 42
+
+  
+

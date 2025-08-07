@@ -1,0 +1,63 @@
+
+model_class : MultVAE
+model_config:
+  encoder_dims: [128] # VAE [n_items] + encoder_dims + [2*latent_size] 
+  decoder_dims: [128] # VAE [latent_size]+ decoder_dims + [n_item] 
+  latent_size : 64
+  input_dropout: 0.1
+  decoder_dropout: 0.0
+  anneal_cap: 0.5 # beta parameter
+  total_anneal_steps: 0 # set this value to 0 for constant beta parameter
+  l1_weight_decay: ~ 
+
+
+dataset_config: 
+  dataset: ml-1m
+  dataset_type: multi_hot ## TODO
+  user_features:
+    - name: "gender"
+      type: "categorical"
+    # - name: "age"
+    #   type: "categorical"  
+
+
+trainer:
+  n_epochs: 100
+  metrics_top_k: [ 10 , 20, 50, 100 ]
+  eval_metrics :  [ "ndcg", "recall", "coverage"]
+  store_last_model: true
+
+  dataloader:
+    batch_size: 128
+    eval_batch_size : 1024
+    n_workers: 0
+    shuffle_train: true
+
+  optimizer: 'adamw' 
+  optimizer_config: 
+    lr: 1e-3
+    weight_decay: 1e-4
+    
+  scheduler:
+    mode: 'min'
+    factor: 0.1
+    patience: 5
+    min_lr: 1e-6
+  
+  early_stopping_criteria:
+    utility:
+      metric: "ndcg@10"
+      highest_is_best: true
+      warmup: false
+      patience: 20
+
+  store_model_every: 1000
+
+
+
+logging:
+  log_every_n_batches: 100
+random_state: 42
+# use_wandb: true
+  
+

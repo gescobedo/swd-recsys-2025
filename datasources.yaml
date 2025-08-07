@@ -1,0 +1,13 @@
+local_dataset_path_map:
+  local_user: "/path/to/datasets/"
+
+local_results_path_map:
+  local_user: "/path/to/results/"
+
+server_dataset_path_map: 
+  remote_user: "/server/path/to/datasets/"
+
+server_results_path_map: 
+  remote_user: "/server/path/to/results/"
+   
+
