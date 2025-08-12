@@ -1,7 +1,6 @@
-## Source code repository for the paper: 
-
 # Debiasing Implicit Feedback Recommenders via Sliced Wasserstein Distance-based Regularization
-
+Source code repository for the paper: 
+> Gustavo Escobedo, David Penz, and Markus Schedl. 2025. Debiasing Implicit Feedback Recommenders via Sliced Wasserstein Distance-based Regularization. In Proceedings of the Nineteenth ACM Conference on RecommenderSystems (RecSys ’25), September 22–26, 2025, Prague, Czech Republic. ACM, New York, NY, USA.
 
 
 ## Install
